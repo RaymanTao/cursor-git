@@ -117,7 +117,6 @@
       background: #fafafa;
       border: 1px solid #f0f0f0;
       transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
-      flex-wrap: wrap;
     }
 
     .todo-item:hover {
@@ -160,39 +159,6 @@
       line-height: 1;
       border-radius: 999px;
       transition: background 0.15s, transform 0.1s;
-    }
-
-    .todo-reminder {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      margin-left: auto;
-    }
-
-    .todo-reminder input[type="datetime-local"] {
-      font-size: 11px;
-      padding: 4px 6px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      outline: none;
-    }
-
-    .todo-reminder button {
-      border: none;
-      background: #10b981;
-      color: #fff;
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s, transform 0.1s;
-    }
-
-    .todo-reminder button:hover {
-      background: #059669;
-      transform: translateY(-1px);
     }
 
     .todo-delete:hover {
@@ -299,41 +265,6 @@
       });
     }
 
-    function scheduleReminder(li, datetimeInput, textSpan) {
-      // 先清除之前的闹钟
-      if (li._reminderTimeoutId) {
-        clearTimeout(li._reminderTimeoutId);
-        li._reminderTimeoutId = null;
-      }
-
-      const value = datetimeInput.value;
-      if (!value) {
-        alert("请先选择提醒时间");
-        return;
-      }
-
-      const targetTime = new Date(value).getTime();
-      const nowTime = Date.now();
-      const delay = targetTime - nowTime;
-
-      if (isNaN(targetTime)) {
-        alert("时间格式不正确");
-        return;
-      }
-
-      if (delay <= 0) {
-        alert("提醒时间必须晚于当前时间");
-        return;
-      }
-
-      li._reminderTimeoutId = setTimeout(() => {
-        alert("待办事项提醒：\n" + textSpan.textContent);
-        li._reminderTimeoutId = null;
-      }, delay);
-
-      alert("闹钟已设置");
-    }
-
     function addTodo(text) {
       const trimmed = text.trim();
       if (!trimmed) return;
@@ -348,19 +279,6 @@
       span.className = "todo-text";
       span.textContent = trimmed;
 
-      const reminderWrapper = document.createElement("div");
-      reminderWrapper.className = "todo-reminder";
-
-      const datetimeInput = document.createElement("input");
-      datetimeInput.type = "datetime-local";
-      datetimeInput.title = "选择提醒时间";
-
-      const setReminderBtn = document.createElement("button");
-      setReminderBtn.textContent = "设置闹钟";
-
-      reminderWrapper.appendChild(datetimeInput);
-      reminderWrapper.appendChild(setReminderBtn);
-
       const delBtn = document.createElement("button");
       delBtn.className = "todo-delete";
       delBtn.innerHTML = "×";
@@ -372,14 +290,7 @@
         applyFilter();
       });
 
-      setReminderBtn.addEventListener("click", () => {
-        scheduleReminder(li, datetimeInput, span);
-      });
-
       delBtn.addEventListener("click", () => {
-        if (li._reminderTimeoutId) {
-          clearTimeout(li._reminderTimeoutId);
-        }
         li.remove();
         updateEmptyHint();
         updateCounter();
@@ -387,7 +298,6 @@
 
       li.appendChild(checkbox);
       li.appendChild(span);
-      li.appendChild(reminderWrapper);
       li.appendChild(delBtn);
       list.appendChild(li);
 
